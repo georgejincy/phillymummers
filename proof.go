@@ -1,4 +1,4 @@
-package main 
+package main
 
 import (
 	"bytes"
@@ -12,8 +12,11 @@ var (
 	maxNonce = math.MaxInt64
 )
 
-const targetBits = 24
+const (
+	targetBits = 24
+)
 
+// ProofOfWork defines a block's proof
 type ProofOfWork struct {
 	block  *Block
 	target *big.Int
@@ -34,6 +37,7 @@ func (pow *ProofOfWork) prepareData(nonce int) []byte {
 	return data
 }
 
+// Run mines blocks and creates a pow
 func (pow *ProofOfWork) Run() (int, []byte) {
 	var hashInt big.Int
 	var hash [32]byte
@@ -57,6 +61,7 @@ func (pow *ProofOfWork) Run() (int, []byte) {
 	return nonce, hash[:]
 }
 
+// Validate checks that pow matches hash of block data
 func (pow *ProofOfWork) Validate() bool {
 	var hashInt big.Int
 
@@ -69,6 +74,7 @@ func (pow *ProofOfWork) Validate() bool {
 	return isValid
 }
 
+// NewProofOfWork creates a new pow target
 func NewProofOfWork(b *Block) *ProofOfWork {
 	target := big.NewInt(1)
 	target.Lsh(target, uint(256-targetBits))
