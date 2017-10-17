@@ -149,13 +149,18 @@ func (bc *Blockchain) Iterator() *BlockchainIterator {
 func (bc *Blockchain) MineBlock(transactions []*Transaction) {
 	var lastHash []byte
 
+	for _, tx := range transactions {
+		if bc.VerifyTransaction(tx) != true {
+			log.Panic("ERROR: Invalid transaction")
+		}
+	}
+
 	err := bc.db.View(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte(blocksBucket))
 		lastHash = b.Get([]byte("l"))
 
 		return nil
 	})
-
 	if err != nil {
 		log.Panic(err)
 	}
@@ -178,6 +183,9 @@ func (bc *Blockchain) MineBlock(transactions []*Transaction) {
 
 		return nil
 	})
+	if err != nil {
+		log.Panic(err)
+	}
 }
 
 // SignTransaction signs inputs of a Transaction
